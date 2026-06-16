@@ -324,64 +324,64 @@
                 { t: "Brush teeth and lotion up 🧼", m: 10 },
                 { t: "Pack backpack for school 🎒", m: 10 },
                 { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Tell Mom/Dad you love them", m: 10 }
+                { t: "Tell Mom/Dad you love them 😉❤️", m: 10 }
             ],
-            bonus: { t: "Water lawn with Mom/Dad️", m:30 }
+            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
         },
         Tuesday: {
             list: [
-                { t: "Get dressed & put away PJs", m: 10 },
+                { t: "Get dressed & put away PJs 👚", m: 10 },
                 { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up", m: 10 },
+                { t: "Brush teeth and lotion up 🧼", m: 10 },
                 { t: "Pack backpack for school 🎒", m: 10 },
                 { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Tell Mom/Dad you love them", m: 10 }
+                { t: "Line up & organize shoes 👟", m: 10 }
             ],
-            bonus: { t: "Water lawn with Mom/Dad", m: 30 }
+            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
         },
         Wednesday: {
             list: [
-                { t: "Get dressed & put away PJs", m: 10 },
+                { t: "Get dressed & put away PJs 👚", m: 10 },
                 { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up", m: 10 },
+                { t: "Brush teeth and lotion up 🧼", m: 10 },
                 { t: "Pack backpack for school 🎒", m: 10 },
                 { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Tell Mom/Dad you love them", m: 10 }
+                { t: "Help sort & fold laundry 🧺", m: 10 }
             ],
-            bonus: { t: "Water lawn with Mom/Dad️", m: 30 }
+            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
         },
         Thursday: {
             list: [
-                { t: "Get dressed & put away PJs", m: 10 },
+                { t: "Get dressed & put away PJs 👚", m: 10 },
                 { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up", m: 10 },
+                { t: "Brush teeth and lotion up 🧼", m: 10 },
                 { t: "Pack backpack for school 🎒", m: 10 },
                 { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Tell Mom/Dad you love them", m: 10 }
+                { t: "Help empty the house trashes 🗑️", m: 10 }
             ],
-            bonus: { t: "Water lawn with Mom/Dad", m: 30 }
+            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
         },
         Friday: {
             list: [
-                { t: "Get dressed & put away PJs", m: 10 },
+                { t: "Get dressed & put away PJs 👚", m: 10 },
                 { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up", m: 10 },
+                { t: "Brush teeth and lotion up 🧼", m: 10 },
                 { t: "Pack backpack for school 🎒", m: 10 },
                 { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Tell Mom/Dad you love them", m: 10 }
+                { t: "Clean up toys & coffee table 🧸", m: 10 }
             ],
-            bonus: { t: "Water lawn with Mom/Dad", m: 30 }
+            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
         },
         Saturday: {
             list: [
                 { t: "Get dressed (No PJs!) 👑", m: 10 },
                 { t: "Make your bed 🛏️", m: 10 },
                 { t: "Fold & put away laundry 👚", m: 10 },
-                { t: "Put away 5 things in living room", m: 10 },
+                { t: "Put away 5 things in living room 🧸", m: 10 },
                 { t: "Clear plate after lunch 🥪", m: 10 },
                 { t: "Clear plate after dinner 🍽️", m: 10 }
             ],
-            bonus: { t: "Water lawn with Mom/Dad", m: 30 }
+            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
         },
         Sunday: {
             list: [
@@ -392,7 +392,7 @@
                 { t: "Clear plate after dinner 🍽️", m: 10 },
                 { t: "Set table for Monday breakfast 🥣", m: 10 }
             ],
-            bonus: { t: "Water lawn with Mom/Dad", m: 30 }
+            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
         }
     };
 
@@ -422,7 +422,7 @@
             const checked = saved[id] ? 'checked' : '';
             listDiv.innerHTML += `
                 <div class="chore-row" onclick="toggle('${id}')">
-                    <input type="checkbox" id="${id}" ${checked} onclick="event.stopPropagation(); refreshProgress();">
+                    <input type="checkbox" id="${id}" ${checked} data-mins="${item.m}" onclick="event.stopPropagation(); refreshProgress();">
                     <span class="chore-text">${item.t}</span>
                     <span class="chore-val">+${item.m}m</span>
                 </div>`;
@@ -431,7 +431,7 @@
         const bChecked = saved['bonus'] ? 'checked' : '';
         bonusDiv.innerHTML = `
             <div class="chore-row" onclick="toggle('bonus')">
-                <input type="checkbox" id="bonus" ${bChecked} onclick="event.stopPropagation(); refreshProgress();">
+                <input type="checkbox" id="bonus" ${bChecked} data-mins="${data.bonus.m}" onclick="event.stopPropagation(); refreshProgress();">
                 <span class="chore-text"><strong>🚀 BONUS:</strong> ${data.bonus.t}</span>
                 <span class="chore-val">+${data.bonus.m}m</span>
             </div>`;
@@ -450,27 +450,34 @@
     function refreshProgress() {
         const day = document.getElementById('dayPicker').value;
         const checks = {};
-        let reg = 0;
-        let bon = 0;
+        
+        let totalPossibleReg = 0;
+        let earnedReg = 0;
+        let earnedBon = 0;
 
         document.querySelectorAll('#choreList input').forEach(i => {
             checks[i.id] = i.checked;
-            if(i.checked) reg += 10;
+            const mins = parseInt(i.getAttribute('data-mins')) || 0;
+            totalPossibleReg += mins;
+            if(i.checked) earnedReg += mins;
         });
 
         const b = document.getElementById('bonus');
         if (b) {
             checks['bonus'] = b.checked;
-            if(b.checked) bon += 30;
+            const bMins = parseInt(b.getAttribute('data-mins')) || 0;
+            if(b.checked) earnedBon += bMins;
         }
 
         localStorage.setItem('checks_' + day, JSON.stringify(checks));
         
-        const pct = Math.min((reg / 60) * 100, 100);
-        document.getElementById('progressFill').style.width = pct + '%';
-        document.getElementById('progressLabel').innerText = reg + " / 60 mins" + (bon > 0 ? " (+30m Bonus!)" : "");
+        const targetGoal = totalPossibleReg || 60; 
+        const pct = Math.min((earnedReg / targetGoal) * 100, 100);
         
-        return (reg + bon);
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressLabel').innerText = `${earnedReg} / ${targetGoal} mins` + (earnedBon > 0 ? ` (+${earnedBon}m Bonus!)` : "");
+        
+        return (earnedReg + earnedBon);
     }
 
     function deposit() {
