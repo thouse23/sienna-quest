@@ -517,27 +517,6 @@
     saveBank();
    
 
-    function loadChores() {
-        const day = document.getElementById('dayPicker').value;
-        const listDiv = document.getElementById('choreList');
-        const bonusDiv = document.getElementById('bonusList');
-        const data = chores[day];
-        
-        listDiv.innerHTML = '';
-        bonusDiv.innerHTML = '';
-
-        const saved = JSON.parse(localStorage.getItem('checks_' + day)) || {};
-
-        data.list.forEach((item, i) => {
-            const id = 'c' + i;
-            const checked = saved[id] ? 'checked' : '';
-            listDiv.innerHTML += `
-                <div class="chore-row" onclick="toggle('${id}')">
-                    <input type="checkbox" id="${id}" ${checked} data-mins="${item.m}" onclick="event.stopPropagation(); refreshProgress();">
-                    <span class="chore-text">${item.t}</span>
-                    <span class="chore-val">+${item.m}m</span>
-                </div>`;
-        });
 
         const bChecked = saved['bonus'] ? 'checked' : '';
         bonusDiv.innerHTML = `
