@@ -292,7 +292,7 @@
         </div>
     </div>
 
-    <div class="tracker-header">Today's Missions</div>
+  <div class="tracker-header">Today's Missions</div>
     <select id="dayPicker" class="day-select" onchange="loadChores()">
         <option value="Monday">🌸 Monday 🌸</option>
         <option value="Tuesday">🌸 Tuesday 🌸</option>
@@ -314,8 +314,10 @@
 
     <button class="btn-deposit" onclick="deposit()">🌟 DEPOSIT MY TIME! 🌟</button>
 </div>
-// ==========================================
-    // NEW DYNAMIC CHORE LISTS & MATH ENGINE
+
+<script>
+    // ==========================================
+    // 1. DYNAMIC CHORE LISTS & MATH ENGINE
     // ==========================================
     const baseChores = [
         { t: "Make your bed 🛏️", m: 10 },
@@ -393,59 +395,7 @@
         
         refreshProgress();
     }
-<script>
-   // ==========================================
-    // 1. DYNAMIC CHORE LISTS & MATH ENGINE
-    // ==========================================
-    const baseChores = [
-        { t: "Make your bed 🛏️", m: 10 },
-        { t: "Brush teeth and lotion up 🧼", m: 10 },
-        { t: "Get dressed & put away PJs 👚", m: 10 }
-    ];
-
-    const chorePool = [
-        { t: "Vacuum the living room 🧹", m: 10 },
-        { t: "Empty the dishwasher 🍽️", m: 10 },
-        { t: "Wipe down kitchen counters ✨", m: 10 },
-        { t: "Take out the recycling ♻️", m: 10 },
-        { t: "Dust bedroom shelves 💨", m: 10 },
-        { t: "Water the indoor plants 🪴", m: 10 },
-        { t: "Feed Luna her food 🐶", m: 10 },
-        { t: "Clear dinner table 🍽️", m: 10 },
-        { t: "Put away toys & books 🧸", m: 10 }
-    ];
-
-    const bonusChore = { t: "Water lawn with Mom/Dad 💦", m: 15 };
-
-    // Linear Congruential Generator for predictable daily randomness
-    function seededRandom(seed) {
-        return function() {
-            seed = (seed * 1664525 + 1013904223) % 4294967296;
-            return seed / 4294967296;
-        };
-    }
-
-    // Generates a fixed list of 6 chores specific to whatever day is selected
-    function getSiennasDailyChores(dayName) {
-        const dayOffsets = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 7 };
-        const offset = dayOffsets[dayName] || 0;
-
-        const d = new Date();
-        const dateSeed = (d.getFullYear() * 10000) + ((d.getMonth() + 1) * 100) + d.getDate() + offset;
-        
-        const myRandom = seededRandom(dateSeed);
-        const poolCopy = [...chorePool];
-        const selectedPoolChores = [];
-
-        while (selectedPoolChores.length < 3 && poolCopy.length > 0) {
-            const randomIndex = Math.floor(myRandom() * poolCopy.length);
-            const [chosenChore] = poolCopy.splice(randomIndex, 1);
-            selectedPoolChores.push(chosenChore);
-        }
-
-        return [...baseChores, ...selectedPoolChores];
-    }
-
+    
     // ==========================================
     // 2. CORE APPLICATION STATE
     // ==========================================
