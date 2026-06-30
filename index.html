@@ -518,16 +518,6 @@
    
 
 
-        const bChecked = saved['bonus'] ? 'checked' : '';
-        bonusDiv.innerHTML = `
-            <div class="chore-row" onclick="toggle('bonus')">
-                <input type="checkbox" id="bonus" ${bChecked} data-mins="${data.bonus.m}" onclick="event.stopPropagation(); refreshProgress();">
-                <span class="chore-text"><strong>🚀 BONUS:</strong> ${data.bonus.t}</span>
-                <span class="chore-val">+${data.bonus.m}m</span>
-            </div>`;
-        
-        refreshProgress();
-    
 
     function toggle(id) {
         const cb = document.getElementById(id);
