@@ -316,95 +316,178 @@
 </div>
 
 <script>
-    const chores = {
-        Monday: {
-            list: [
-                { t: "Get dressed & put away PJs 👚", m: 10 },
-                { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up 🧼", m: 10 },
-                { t: "Pack backpack for school 🎒", m: 10 },
-                { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Tell Mom/Dad you love them 😉❤️", m: 10 }
-            ],
-            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
-        },
-        Tuesday: {
-            list: [
-                { t: "Get dressed & put away PJs 👚", m: 10 },
-                { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up 🧼", m: 10 },
-                { t: "Pack backpack for school 🎒", m: 10 },
-                { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Line up & organize shoes 👟", m: 10 }
-            ],
-            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
-        },
-        Wednesday: {
-            list: [
-                { t: "Get dressed & put away PJs 👚", m: 10 },
-                { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up 🧼", m: 10 },
-                { t: "Pack backpack for school 🎒", m: 10 },
-                { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Help sort & fold laundry 🧺", m: 10 }
-            ],
-            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
-        },
-        Thursday: {
-            list: [
-                { t: "Get dressed & put away PJs 👚", m: 10 },
-                { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up 🧼", m: 10 },
-                { t: "Pack backpack for school 🎒", m: 10 },
-                { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Help empty the house trashes 🗑️", m: 10 }
-            ],
-            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
-        },
-        Friday: {
-            list: [
-                { t: "Get dressed & put away PJs 👚", m: 10 },
-                { t: "Make your bed 🛏️", m: 10 },
-                { t: "Brush teeth and lotion up 🧼", m: 10 },
-                { t: "Pack backpack for school 🎒", m: 10 },
-                { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Clean up toys & coffee table 🧸", m: 10 }
-            ],
-            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
-        },
-        Saturday: {
-            list: [
-                { t: "Get dressed (No PJs!) 👑", m: 10 },
-                { t: "Make your bed 🛏️", m: 10 },
-                { t: "Fold & put away laundry 👚", m: 10 },
-                { t: "Put away 5 things in living room 🧸", m: 10 },
-                { t: "Clear plate after lunch 🥪", m: 10 },
-                { t: "Clear plate after dinner 🍽️", m: 10 }
-            ],
-            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
-        },
-        Sunday: {
-            list: [
-                { t: "Get dressed 👕", m: 10 },
-                { t: "Make your bed 🛏️", m: 10 },
-                { t: "Put ALL toys into bins 🧱", m: 10 },
-                { t: "Dirty clothes in hamper 🧺", m: 10 },
-                { t: "Clear plate after dinner 🍽️", m: 10 },
-                { t: "Set table for Monday breakfast 🥣", m: 10 }
-            ],
-            bonus: { t: "Water lawn with Mom/Dad 💦", m: 15 }
-        }
-    };
+   // ==========================================
+    // 1. DYNAMIC CHORE LISTS & MATH ENGINE
+    // ==========================================
+    const baseChores = [
+        { t: "Make your bed 🛏️", m: 10 },
+        { t: "Brush teeth and lotion up 🧼", m: 10 },
+        { t: "Get dressed & put away PJs 👚", m: 10 }
+    ];
 
+    const chorePool = [
+        { t: "Vacuum the living room 🧹", m: 10 },
+        { t: "Empty the dishwasher 🍽️", m: 10 },
+        { t: "Wipe down kitchen counters ✨", m: 10 },
+        { t: "Take out the recycling ♻️", m: 10 },
+        { t: "Dust bedroom shelves 💨", m: 10 },
+        { t: "Water the indoor plants 🪴", m: 10 },
+        { t: "Feed Luna her food 🐶", m: 10 },
+        { t: "Clear dinner table 🍽️", m: 10 },
+        { t: "Put away toys & books 🧸", m: 10 }
+    ];
+
+    const bonusChore = { t: "Water lawn with Mom/Dad 💦", m: 15 };
+
+    // Linear Congruential Generator for predictable daily randomness
+    function seededRandom(seed) {
+        return function() {
+            seed = (seed * 1664525 + 1013904223) % 4294967296;
+            return seed / 4294967296;
+        };
+    }
+
+    // Generates a fixed list of 6 chores specific to whatever day is selected
+    function getSiennasDailyChores(dayName) {
+        const dayOffsets = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 7 };
+        const offset = dayOffsets[dayName] || 0;
+
+        const d = new Date();
+        const dateSeed = (d.getFullYear() * 10000) + ((d.getMonth() + 1) * 100) + d.getDate() + offset;
+        
+        const myRandom = seededRandom(dateSeed);
+        const poolCopy = [...chorePool];
+        const selectedPoolChores = [];
+
+        while (selectedPoolChores.length < 3 && poolCopy.length > 0) {
+            const randomIndex = Math.floor(myRandom() * poolCopy.length);
+            const [chosenChore] = poolCopy.splice(randomIndex, 1);
+            selectedPoolChores.push(chosenChore);
+        }
+
+        return [...baseChores, ...selectedPoolChores];
+    }
+
+    // ==========================================
+    // 2. CORE APPLICATION STATE
+    // ==========================================
     let bankValue = parseInt(localStorage.getItem('siennaBank')) || 0;
     let today = new Date().toLocaleString('en-us', {weekday:'long'});
-    if (!chores[today]) today = "Monday";
+    
+    const validDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    if (!validDays.includes(today)) today = "Monday";
     document.getElementById('dayPicker').value = today;
 
     function saveBank() {
         localStorage.setItem('siennaBank', bankValue);
         document.getElementById('bankBalance').innerText = bankValue;
     }
+
+    // ==========================================
+    // 3. UI RENDERING & LOGIC
+    // ==========================================
+    function loadChores() {
+        const day = document.getElementById('dayPicker').value;
+        const listDiv = document.getElementById('choreList');
+        const bonusDiv = document.getElementById('bonusList');
+        
+        const currentList = getSiennasDailyChores(day);
+        
+        listDiv.innerHTML = '';
+        bonusDiv.innerHTML = '';
+
+        const saved = JSON.parse(localStorage.getItem('checks_' + day)) || {};
+
+        currentList.forEach((item, i) => {
+            const id = 'c' + i;
+            const checked = saved[id] ? 'checked' : '';
+            listDiv.innerHTML += `
+                <div class="chore-row" onclick="toggle('${id}')">
+                    <input type="checkbox" id="${id}" ${checked} data-mins="${item.m}" onclick="event.stopPropagation(); refreshProgress();">
+                    <span class="chore-text">${item.t}</span>
+                    <span class="chore-val">+${item.m}m</span>
+                </div>`;
+        });
+
+        const bChecked = saved['bonus'] ? 'checked' : '';
+        bonusDiv.innerHTML = `
+            <div class="chore-row" onclick="toggle('bonus')">
+                <input type="checkbox" id="bonus" ${bChecked} data-mins="${bonusChore.m}" onclick="event.stopPropagation(); refreshProgress();">
+                <span class="chore-text"><strong>🚀 BONUS:</strong> ${bonusChore.t}</span>
+                <span class="chore-val">+${bonusChore.m}m</span>
+            </div>`;
+        
+        refreshProgress();
+    }
+
+    function toggle(id) {
+        const cb = document.getElementById(id);
+        if (cb) {
+            cb.checked = !cb.checked;
+            refreshProgress();
+        }
+    }
+
+    function refreshProgress() {
+        const day = document.getElementById('dayPicker').value;
+        const checks = {};
+        
+        let totalPossibleReg = 0;
+        let earnedReg = 0;
+        let earnedBon = 0;
+
+        document.querySelectorAll('#choreList input').forEach(i => {
+            checks[i.id] = i.checked;
+            const mins = parseInt(i.getAttribute('data-mins')) || 0;
+            totalPossibleReg += mins;
+            if(i.checked) earnedReg += mins;
+        });
+
+        const b = document.getElementById('bonus');
+        if (b) {
+            checks['bonus'] = b.checked;
+            const bMins = parseInt(b.getAttribute('data-mins')) || 0;
+            if(b.checked) earnedBon += bMins;
+        }
+
+        localStorage.setItem('checks_' + day, JSON.stringify(checks));
+        
+        const targetGoal = totalPossibleReg || 60; 
+        const pct = Math.min((earnedReg / targetGoal) * 100, 100);
+        
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressLabel').innerText = `${earnedReg} / ${targetGoal} mins` + (earnedBon > 0 ? ` (+${earnedBon}m Bonus!)` : "");
+        
+        return (earnedReg + earnedBon);
+    }
+
+    function deposit() {
+        const amt = refreshProgress();
+        if(amt === 0) return alert("Do some chores first, Sienna!");
+        
+        if(confirm("Ready to move " + amt + " minutes into your Vault?")) {
+            bankValue += amt;
+            saveBank();
+            const day = document.getElementById('dayPicker').value;
+            localStorage.removeItem('checks_' + day);
+            loadChores();
+        }
+    }
+
+    function withdraw() {
+        const val = parseInt(document.getElementById('withdrawInput').value);
+        if(!val || val <= 0) return alert("How many minutes are you using?");
+        if(val > bankValue) return alert("Not enough minutes yet! Do some more chores.");
+        
+        if(confirm("Use " + val + " minutes now?")) {
+            bankValue -= val;
+            saveBank();
+            document.getElementById('withdrawInput').value = '';
+        }
+    }
+
+    saveBank();
+    loadChores();
 
     function loadChores() {
         const day = document.getElementById('dayPicker').value;
